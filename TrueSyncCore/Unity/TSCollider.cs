@@ -12,19 +12,21 @@ namespace TrueSync {
     [ExecuteInEditMode]
     public abstract class TSCollider : MonoBehaviour, ICollider {
 
-        private Shape shape;
+        #region Shape
 
-        /**
-         *  @brief Shape used by a collider.
-         **/
+        private Shape shape;
         public Shape Shape {
             get {
                 if (shape == null)
                     shape = CreateShape();
                 return shape;
             }
-            protected set { shape = value; }
-        }
+            protected set => shape = value;
+        }        
+
+        #endregion
+
+        #region IsTrigger
 
         [FormerlySerializedAs("isTrigger")]
         [SerializeField]
@@ -35,8 +37,8 @@ namespace TrueSync {
          **/
         public bool isTrigger {
             get {
-                if (_body != null) {
-                    return _body.IsColliderOnly;
+                if (_rigidBody != null) {
+                    return _rigidBody.IsColliderOnly;
                 }
 
                 return _isTrigger;
@@ -44,121 +46,126 @@ namespace TrueSync {
             set {
                 _isTrigger = value;
 
-                if (_body != null) {
-                    _body.IsColliderOnly = _isTrigger;
+                if (_rigidBody != null) {
+                    _rigidBody.IsColliderOnly = _isTrigger;
                 }
             }
-        }
+        }        
 
-        /**
-         *  @brief Simulated material. 
-         **/
-        public TSMaterial tsMaterial;
+        #endregion
+
+        #region Center
 
         [SerializeField]
-        private TSVector center;
-
-        private Vector3 scaledCenter;
-
-        internal RigidBody _body;
-
+        private TSVector center;        
         /**
          *  @brief Center of the collider shape.
          **/
         public TSVector Center {
-            get {
-                return center;
+            get => center;
+            set => center = value;
+        }
+        #endregion
+
+        #region tsRigidBody
+
+        private TSRigidBody _tsRigidBody;
+
+        public TSRigidBody tsRigidBody
+        {
+            get
+            {
+                if(!_isInternalInitialized)
+                    InternalInit();
+                return _tsRigidBody;
             }
-            set {
-                center = value;
+        }
+        
+
+        #endregion
+
+        #region tsTransform
+
+        public TSTransform _tsTransform;
+
+        public TSTransform tsTransform
+        {
+            get
+            {
+                if(!_isInternalInitialized)
+                    InternalInit();
+                return _tsTransform;
             }
         }
 
-        /**
-         *  @brief Returns a version of collider's center scaled by parent's transform.
-         */
-        public TSVector ScaledCenter {
-			get {
-				return TSVector.Scale (Center, lossyScale);
-			}
-		}
+        #endregion
+
+        #region tsPhysicsMaterial
 
         /**
-         *  @brief Creates the shape related to a concrete implementation of TSCollider.
+         *  @brief Simulated material. 
          **/
-        public abstract Shape CreateShape();
+        [SerializeField] private TSPhysicsMaterial _tsPhysicsMaterial;
 
-        private TSRigidBody tsRigidBody;
+        public TSPhysicsMaterial tsPhysicsMaterial
+        {
+            get => _tsPhysicsMaterial;
+            private set => _tsPhysicsMaterial = value;
+        }        
 
+        #endregion
+        
         /**
-         *  @brief Returns the {@link TSRigidBody} attached.
-         */
-        public TSRigidBody attachedRigidbody {
-            get {
-                return tsRigidBody;
-            }
-        }
-
-        /**
-         *  @brief Returns body's boundind box.
-         */
-        public TSBBox bounds {
-            get {
-                return this._body.BoundingBox;
-            }
-        }
+         *  @brief Returns true if the body was already initialized.
+         **/
+        public bool IsInitialized => _rigidBody != null;
 
         /**
          *  @brief Returns the body linked to this collider.
          */
-        public IBody3D Body {
-            get {
-                if (_body == null) {
-                    CheckPhysics();
-                }
+        public IBody3D RigidBody => _rigidBody;
 
-                return _body;
-            }
-        }
-
+        /**
+         *  @brief Returns a version of collider's center scaled by parent's transform.
+         */
+        public TSVector ScaledCenter => TSVector.Scale (Center, lossyScale);        
+        
         /**
          *  @brief Holds an first value of the GameObject's lossy scale.
          **/
         [SerializeField]
-        [HideInInspector]
         protected TSVector lossyScale = TSVector.one;
+        
+        #region InitSettings
 
-        [HideInInspector]
-        public TSTransform tsTransform;
+        private bool _isInternalInitialized = false;
 
-        /**
-         *  @brief Creates a new {@link TSRigidBody} when there is no one attached to this GameObject.
-         **/
-        public void Awake() {
-            tsTransform = this.GetComponent<TSTransform>();
-            tsRigidBody = this.GetComponent<TSRigidBody>();
-
+        internal RigidBody _rigidBody;
+        private void InternalInit()
+        {
+            _isInternalInitialized = true;
+            _tsRigidBody = GetComponent<TSRigidBody>();
             if (lossyScale == TSVector.one) {
                 lossyScale = TSVector.Abs(transform.localScale.ToTSVector());
             }
         }
+        
+        private RigidBody CreateBody() {
+            var newBody = new RigidBody(Shape);
 
-        public void Update() {
-            if (!Application.isPlaying) {
-                lossyScale = TSVector.Abs(transform.lossyScale.ToTSVector());
-            }
-        }
-
-        private void CreateBody() {
-            RigidBody newBody = new RigidBody(Shape);
-
-            if (tsMaterial == null) {
-                tsMaterial = GetComponent<TSMaterial>();
+            //如果没有在检视面板赋值，就自动获取一下
+            if (tsPhysicsMaterial == null) {
+                tsPhysicsMaterial = GetComponent<TSPhysicsMaterial>();
             }
 
-            if (tsMaterial != null) {
-                newBody.TSFriction = tsMaterial.friction;
-                newBody.TSRestitution = tsMaterial.restitution;
+            if (tsPhysicsMaterial != null) {
+                newBody.TSFriction = tsPhysicsMaterial.friction;
+                newBody.TSRestitution = tsPhysicsMaterial.restitution;
+            }
+            else
+            {
+                newBody.TSFriction = TrueSyncManager.Config.friction;
+                newBody.TSRestitution = TrueSyncManager.Config.restitution;
             }
 
             newBody.IsColliderOnly = isTrigger;
@@ -184,33 +191,40 @@ namespace TrueSync {
                 newBody.AffectedByGravity = false;
                 newBody.IsStatic = true;
             }
-
-            _body = newBody;
+            
+            newBody.FreezeConstraints = tsRigidBody==null ? TSRigidBodyConstraints.None : tsRigidBody.constraints;
+            
+            return newBody;
         }
 
         /**
-         *  @brief Initializes Shape and RigidBody and sets initial values to position and orientation based on Unity's transform.
+         *  @brief Initializes Shape and RigidBody and sets initial values to position and orientation based
+         * on Unity's transform.
          **/
-        public void Initialize() {
-            CreateBody();
+        public void NecessaryOuterInitialize() {
+            _rigidBody = CreateBody();
         }
-
-        private void CheckPhysics() {
-            if (_body == null && PhysicsManager.instance != null) {
-                PhysicsManager.instance.AddBody(this);
+        
+        #endregion
+        
+        
+        public void Update() {
+            if (!Application.isPlaying) {
+                lossyScale = TSVector.Abs(transform.lossyScale.ToTSVector());
             }
         }
+        
 
         /**
          *  @brief Do a base matrix transformation to draw correctly all collider gizmos.
          **/
-        public virtual void OnDrawGizmos() {
+        public virtual void OnDrawGizmosSelected() {
             if (!this.enabled) {
                 return;
             }
 
-            Vector3 position = _body != null ? _body.Position.ToVector() : (transform.position + ScaledCenter.ToVector());
-            Quaternion rotation = _body != null ? _body.Orientation.ToQuaternion() : transform.rotation;
+            Vector3 position = _rigidBody != null ? _rigidBody.Position.ToVector() : (transform.position + ScaledCenter.ToVector());
+            Quaternion rotation = _rigidBody != null ? _rigidBody.Orientation.ToQuaternion() : transform.rotation;
 
             Gizmos.color = Color.yellow;
 
@@ -224,6 +238,8 @@ namespace TrueSync {
             Gizmos.matrix = oldGizmosMatrix;
         }
 
+        #region abstract methods
+
         /**
          *  @brief Returns the gizmos size.
          **/
@@ -232,16 +248,13 @@ namespace TrueSync {
         /**
          *  @brief Draws the specific gizmos of concrete collider (for example "Gizmos.DrawWireCube" for a {@link TSBoxCollider}).
          **/
-        protected abstract void DrawGizmos();
-
+        protected abstract void DrawGizmos();   
         /**
-         *  @brief Returns true if the body was already initialized.
+         *  @brief Creates the shape related to a concrete implementation of TSCollider.
          **/
-        public bool IsBodyInitialized {
-            get {
-                return _body != null;
-            }
-        }
+        public abstract Shape CreateShape();        
+
+        #endregion
     }
 
 }

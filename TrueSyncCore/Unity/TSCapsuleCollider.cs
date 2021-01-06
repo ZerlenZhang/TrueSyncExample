@@ -18,8 +18,8 @@ namespace TrueSync {
          **/
         public FP radius {
             get {
-                if (_body != null) {
-                    return ((CapsuleShape)_body.Shape).Radius;
+                if (_rigidBody != null) {
+                    return ((CapsuleShape)_rigidBody.Shape).Radius;
                 }
 
                 return _radius;
@@ -27,8 +27,8 @@ namespace TrueSync {
             set {
                 _radius = value;
 
-                if (_body != null) {
-                    ((CapsuleShape)_body.Shape).Radius = _radius;
+                if (_rigidBody != null) {
+                    ((CapsuleShape)_rigidBody.Shape).Radius = _radius;
                 }
             }
         }
@@ -42,8 +42,8 @@ namespace TrueSync {
          **/
         public FP length {
             get {
-                if (_body != null) {
-                    return ((CapsuleShape)_body.Shape).Length;
+                if (_rigidBody != null) {
+                    return ((CapsuleShape)_rigidBody.Shape).Length;
                 }
 
                 return _length;
@@ -51,8 +51,8 @@ namespace TrueSync {
             set {
                 _length = value;
 
-                if (_body != null) {
-                    ((CapsuleShape)_body.Shape).Length = _length;
+                if (_rigidBody != null) {
+                    ((CapsuleShape)_rigidBody.Shape).Length = _length;
                 }
             }
         }

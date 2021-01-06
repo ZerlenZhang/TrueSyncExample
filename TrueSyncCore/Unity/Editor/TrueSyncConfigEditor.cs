@@ -63,8 +63,14 @@ namespace TrueSync {
                 settings.lockedTimeStep = 0;
             }
 
+        
             settings.showStats = EditorGUILayout.Toggle("Show Stats", settings.showStats);
 
+            settings.friction = EditorGUILayout.Slider("默认摩擦系数", settings.friction.AsFloat(), 0, 1);
+            settings.restitution = EditorGUILayout.FloatField("反弹系数", settings.restitution.AsFloat());
+            settings.linearDrag = EditorGUILayout.FloatField("默认线性阻力", settings.linearDrag.AsFloat());
+            settings.angularDrag = EditorGUILayout.FloatField("默认旋转阻力", settings.angularDrag.AsFloat());
+            
             EditorGUI.indentLevel--;
 
             GUILayout.Space(10);

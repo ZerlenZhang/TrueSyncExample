@@ -105,26 +105,32 @@ namespace TrueSync {
                 return;
             }
 
-            TSCollider tsCollider = (TSCollider) iCollider;
+            var tsCollider = (TSCollider) iCollider;
 
-            if (tsCollider._body != null) {
-                //already added
+            //如果已经初始化过
+            if (tsCollider.IsInitialized)
                 return;
+            
+
+            //调用Collider内部Api初始化
+            tsCollider.NecessaryOuterInitialize();
+            
+            //Manager其他管理逻辑注册
+            world.AddBody(tsCollider._rigidBody);
+            gameObjectMap[tsCollider._rigidBody] = tsCollider.gameObject;
+
+            var parent = tsCollider.transform.parent;
+            if ( parent!= null 
+                 && parent.GetComponentInParent<TSCollider>() != null) {
+                var parentCollider = parent.GetComponentInParent<TSCollider>();
+				world.AddConstraint(
+                    new ConstraintHierarchy(
+                        parentCollider.RigidBody, 
+                        tsCollider._rigidBody, 
+                        (tsCollider.tsTransform.position + tsCollider.ScaledCenter) - (parentCollider.tsTransform.position + parentCollider.ScaledCenter)));
             }
 
-            TSRigidBody tsRB = tsCollider.GetComponent<TSRigidBody>();
-            TSRigidBodyConstraints constraints = tsRB != null ? tsRB.constraints : TSRigidBodyConstraints.None;
 
-            tsCollider.Initialize();
-            world.AddBody(tsCollider._body);
-            gameObjectMap[tsCollider._body] = tsCollider.gameObject;
-
-            if (tsCollider.gameObject.transform.parent != null && tsCollider.gameObject.transform.parent.GetComponentInParent<TSCollider>() != null) {
-                TSCollider parentCollider = tsCollider.gameObject.transform.parent.GetComponentInParent<TSCollider>();
-				world.AddConstraint(new ConstraintHierarchy(parentCollider.Body, tsCollider._body, (tsCollider.GetComponent<TSTransform>().position + tsCollider.ScaledCenter) - (parentCollider.GetComponent<TSTransform>().position + parentCollider.ScaledCenter)));
-            }
-
-            tsCollider._body.FreezeConstraints = constraints;
         }
 
         public void RemoveBody(IBody iBody) {

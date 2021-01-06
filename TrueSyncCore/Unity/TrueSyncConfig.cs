@@ -26,6 +26,11 @@ namespace TrueSync {
          **/
         public int panicWindow = 100;
 
+        public FP friction = 0.15;
+        public FP restitution = 0;
+        public FP angularDrag = 0.05;
+        public FP linearDrag = 0.15;
+        
         /**
          * @brief Indicates if the 2D physics engine should be enabled.
          **/

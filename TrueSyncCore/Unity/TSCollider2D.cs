@@ -55,7 +55,7 @@ namespace TrueSync {
         /**
          *  @brief Simulated material. 
          **/
-        public TSMaterial tsMaterial;
+        public TSPhysicsMaterial tsPhysicsMaterial;
 
         [SerializeField]
         private TSVector2 center;
@@ -151,17 +151,17 @@ namespace TrueSync {
         private void CreateBodyFixture(Physics2D.Body body, Physics2D.Shape shape) {
             Physics2D.Fixture fixture = body.CreateFixture(shape);
 
-            if (tsMaterial != null) {
-                fixture.Friction = tsMaterial.friction;
-                fixture.Restitution = tsMaterial.restitution;
+            if (tsPhysicsMaterial != null) {
+                fixture.Friction = tsPhysicsMaterial.friction;
+                fixture.Restitution = tsPhysicsMaterial.restitution;
             }
         }
 
         private void CreateBody(Physics2D.World world) {
             Physics2D.Body body = Physics2D.BodyFactory.CreateBody(world);
 
-            if (tsMaterial == null) {
-                tsMaterial = GetComponent<TSMaterial>();
+            if (tsPhysicsMaterial == null) {
+                tsPhysicsMaterial = GetComponent<TSPhysicsMaterial>();
             }
 
             Physics2D.Shape shape = Shape;

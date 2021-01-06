@@ -418,7 +418,7 @@ namespace TrueSync
         /// <param name="vector1">The first vector.</param>
         /// <param name="vector2">The second vector.</param>
         /// <returns>Returns the dot product of both vectors.</returns>
-        #region public static FP Dot(JVector vector1, JVector vector2)
+         #region public static FP Dot(JVector vector1, JVector vector2)
         public static FP Dot(TSVector vector1, TSVector vector2)
         {
             return TSVector.Dot(ref vector1, ref vector2);
@@ -480,8 +480,7 @@ namespace TrueSync
         #region public static void Add(JVector value1, JVector value2)
         public static TSVector Add(TSVector value1, TSVector value2)
         {
-            TSVector result;
-            TSVector.Add(ref value1, ref value2, out result);
+            TSVector.Add(ref value1, ref value2, out var result);
             return result;
         }
 
