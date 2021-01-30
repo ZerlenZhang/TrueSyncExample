@@ -84,10 +84,10 @@ namespace TrueSync.Physics3D {
         /// <param name="box">The axis aligned bounding box of the shape.</param>
         public override void GetBoundingBox(ref TSMatrix orientation, out TSBBox box)
         {
-            TSMatrix abs; TSMath.Absolute(ref orientation, out abs);
+            TSMatrix abs; 
+            TSMath.Absolute(ref orientation, out abs);
             TSVector temp;
             TSVector.Transform(ref halfSize, ref abs, out temp);
-
             box.max = temp;
             TSVector.Negate(ref temp, out box.min);
         }

@@ -84,8 +84,10 @@ namespace TrueSync.Physics3D {
                     {
                         if (RaisePassedBroadphase(bodyList[i], bodyList[e]))
                         {
-                            if (swapOrder) Detect(bodyList[i], bodyList[e]);
-                            else Detect(bodyList[e], bodyList[i]);
+                            if (swapOrder) 
+                                Detect(bodyList[i], bodyList[e]);
+                            else 
+                                Detect(bodyList[e], bodyList[i]);
                             swapOrder = !swapOrder;
                         }
                     }
@@ -227,6 +229,7 @@ namespace TrueSync.Physics3D {
         }
         #endregion
 
+        
         /// <summary>
         /// Sends a ray (definied by start and direction) through the scene (all bodies added).
         /// NOTE: For performance reasons terrain and trianglemeshshape aren't checked
