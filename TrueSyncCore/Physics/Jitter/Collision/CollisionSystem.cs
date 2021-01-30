@@ -153,6 +153,13 @@ namespace TrueSync.Physics3D {
             set { speculativeContacts = value; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the CollisionSystem.
+        /// </summary>
+        public CollisionSystem()
+        {
+        }
+
         internal bool useTerrainNormal = true;
         internal bool useTriangleMeshNormal = true;
 
@@ -161,30 +168,22 @@ namespace TrueSync.Physics3D {
         /// the current colliding triangle as collision normal. This
         /// fixes unwanted behavior on triangle transitions.
         /// </summary>
-        public bool UseTriangleMeshNormal
-        {
-            get => useTriangleMeshNormal;
-            set => useTriangleMeshNormal = value;
-        }
+        public bool UseTriangleMeshNormal { get { return useTriangleMeshNormal; } set { useTriangleMeshNormal = value; } }
         
                 /// <summary>
         /// If set to true the collision system uses the normal of
         /// the current colliding triangle as collision normal. This
         /// fixes unwanted behavior on triangle transitions.
         /// </summary>
-        public bool UseTerrainNormal 
-                { get => useTerrainNormal;
-                    set => useTerrainNormal = value;
-                }
+        public bool UseTerrainNormal { get { return useTerrainNormal; } set { useTerrainNormal = value; } }
 
         /// <summary>
         /// Checks two bodies for collisions using narrowphase.
         /// </summary>
         /// <param name="body1">The first body.</param>
         /// <param name="body2">The second body.</param>
-        #region protected void Detect(IBroadphaseEntity body1, IBroadphaseEntity body2)
-
-        protected void Detect(IBroadphaseEntity entity1, IBroadphaseEntity entity2)
+        #region public virtual void Detect(IBroadphaseEntity body1, IBroadphaseEntity body2)
+        public virtual void Detect(IBroadphaseEntity entity1, IBroadphaseEntity entity2)
         {
             //Debug.Assert(entity1 != entity2, "CollisionSystem reports selfcollision. Something is wrong.");
 
@@ -366,12 +365,15 @@ namespace TrueSync.Physics3D {
                                     }
                                 }
                             }
+
+
                         }
                     }
                 }
 
                 ms1.ReturnWorkingClone();
                 ms2.ReturnWorkingClone();
+
             }
             else
             {
@@ -608,12 +610,12 @@ namespace TrueSync.Physics3D {
         /// <param name="entity1">The first body.</param>
         /// <param name="entity2">The second body.</param>
         /// <returns>Returns true if both are static or inactive.</returns>
-        protected bool CheckBothStaticOrInactive(IBroadphaseEntity entity1, IBroadphaseEntity entity2)
+        public bool CheckBothStaticOrInactive(IBroadphaseEntity entity1, IBroadphaseEntity entity2)
         {
             return (entity1.IsStaticOrInactive && entity2.IsStaticOrInactive);
        }
 
-        protected bool CheckBothStaticNonKinematic(IBroadphaseEntity entity1, IBroadphaseEntity entity2) {
+        public bool CheckBothStaticNonKinematic(IBroadphaseEntity entity1, IBroadphaseEntity entity2) {
             return !world.CanBodiesCollide((RigidBody) entity1, (RigidBody) entity2);
             //return (entity1.IsStaticNonKinematic && entity2.IsStaticNonKinematic);
         }
@@ -624,7 +626,7 @@ namespace TrueSync.Physics3D {
         /// <param name="entity1">The first body.</param>
         /// <param name="entity2">The second body.</param>
         /// <returns>Returns true if an intersection occours.</returns>
-        protected bool CheckBoundingBoxes(IBroadphaseEntity entity1, IBroadphaseEntity entity2)
+        public bool CheckBoundingBoxes(IBroadphaseEntity entity1, IBroadphaseEntity entity2)
         {
             TSBBox box1 = entity1.BoundingBox;
             TSBBox box2 = entity2.BoundingBox;
@@ -638,10 +640,10 @@ namespace TrueSync.Physics3D {
         /// Raises the PassedBroadphase event.
         /// </summary>
         /// <param name="entity1">The first body.</param>
-        /// <param n ame="entity2">The second body.</param>
+        /// <param name="entity2">The second body.</param>
         /// <returns>Returns false if the collision information
         /// should be dropped</returns>
-        protected bool RaisePassedBroadphase(IBroadphaseEntity entity1, IBroadphaseEntity entity2)
+        public bool RaisePassedBroadphase(IBroadphaseEntity entity1, IBroadphaseEntity entity2)
         {
 			if (this.PassedBroadphase != null)
                 return this.PassedBroadphase(entity1, entity2);
@@ -659,7 +661,7 @@ namespace TrueSync.Physics3D {
         /// <param name="point">The collision point.</param>
         /// <param name="normal">The normal pointing to body1.</param>
         /// <param name="penetration">The penetration depth.</param>
-        private void RaiseCollisionDetected(RigidBody body1, RigidBody body2,
+        protected void RaiseCollisionDetected(RigidBody body1, RigidBody body2,
                                             ref TSVector point1, ref TSVector point2,
                                             ref TSVector normal, FP penetration)
         {

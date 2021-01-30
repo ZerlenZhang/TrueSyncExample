@@ -90,9 +90,8 @@ namespace TrueSync.Physics3D {
         /// <param name="normal">The normal pointing from body2 to body1.</param>
         /// <param name="penetration">Estimated penetration depth of the collision.</param>
         /// <returns>Returns true if there is a collision, false otherwise.</returns>
-        public static bool Detect(ISupportMappable support1, ISupportMappable support2, 
-            ref TSMatrix orientation1, ref TSMatrix orientation2,
-            ref TSVector position1, ref TSVector position2,
+        public static bool Detect(ISupportMappable support1, ISupportMappable support2, ref TSMatrix orientation1,
+             ref TSMatrix orientation2, ref TSVector position1, ref TSVector position2,
              out TSVector point, out TSVector normal, out FP penetration)
         {
             // Used variables

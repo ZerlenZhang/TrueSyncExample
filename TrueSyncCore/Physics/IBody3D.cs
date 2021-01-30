@@ -5,7 +5,7 @@ namespace TrueSync {
     /**
     * @brief Represents an interface to 3D bodies.
     **/
-    public interface  IBody3D : IBody {
+    public interface IBody3D : IBody {
 
         /**
         * @brief If true the body doesn't move around by collisions.

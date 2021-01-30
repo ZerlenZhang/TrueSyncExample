@@ -24,7 +24,7 @@ using System.Collections.ObjectModel;
 #endregion
 
 namespace TrueSync.Physics3D {
-	public class SoftBody : IBroadphaseEntity, IComparable
+	public partial class SoftBody : IBroadphaseEntity, IComparable
     {
         [Flags]
         public enum SpringType

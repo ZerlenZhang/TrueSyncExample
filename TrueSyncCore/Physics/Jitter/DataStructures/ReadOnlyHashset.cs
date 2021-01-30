@@ -23,7 +23,7 @@ using System;
 
 namespace TrueSync.Physics3D {
 
-    public class ReadOnlyHashset<T> : IEnumerable<T> where T : IComparable
+    public class ReadOnlyHashset<T> : IEnumerable, IEnumerable<T> where T : IComparable
     {
 		private HashList<T> hashset;
 

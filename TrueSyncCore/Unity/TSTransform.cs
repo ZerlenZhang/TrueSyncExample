@@ -7,7 +7,7 @@ namespace TrueSync {
     *  @brief A deterministic version of Unity's Transform component for 3D physics. 
     **/
     [ExecuteInEditMode]
-    public class  TSTransform : MonoBehaviour {
+    public class TSTransform : MonoBehaviour {
 
         private const float DELTA_TIME_FACTOR = 10f;
 

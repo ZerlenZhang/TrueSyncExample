@@ -41,43 +41,11 @@ namespace TrueSync.Physics3D {
     {
 
         // internal values so we can access them fast  without calling properties.
-
-        #region public TSMatrix Inertia
-
         internal TSMatrix inertia = TSMatrix.Identity;
-        /// <summary>
-        /// Returns the inertia of the untransformed shape.
-        /// </summary>
-        public TSMatrix Inertia => inertia;        
-
-        #endregion
-
-        #region public FP Mass
-
         internal FP mass = FP.One;
-        /// <summary>
-        /// Gets the mass of the shape. This is the volume. (density = 1)
-        /// </summary>
-        public FP Mass { get { return mass; } protected set { mass = value; } }
-        
 
-        #endregion
-        
-        #region public TSBBox BoundingBox
-
-        
-        
         internal TSBBox boundingBox = TSBBox.LargeBox;
-        /// <summary>
-        /// The untransformed axis aligned bounding box of the shape.
-        /// </summary>
-        public TSBBox BoundingBox { get { return boundingBox; } }
-
-        #endregion
-        
         internal TSVector geomCen = TSVector.zero;
-
-        #region event ShapeUpdatedHandler ShapeUpdated
 
         /// <summary>
         /// Gets called when the shape changes one of the parameters.
@@ -85,16 +53,35 @@ namespace TrueSync.Physics3D {
         public event ShapeUpdatedHandler ShapeUpdated;
 
         /// <summary>
+        /// Creates a new instance of a shape.
+        /// </summary>
+        public Shape()
+        {
+        }
+
+        /// <summary>
+        /// Returns the inertia of the untransformed shape.
+        /// </summary>
+        public TSMatrix Inertia { get { return inertia; } protected set { inertia = value; } }
+
+
+        /// <summary>
+        /// Gets the mass of the shape. This is the volume. (density = 1)
+        /// </summary>
+        public FP Mass { get { return mass; } protected set { mass = value; } }
+
+        /// <summary>
         /// Informs all listener that the shape changed.
         /// </summary>
         protected void RaiseShapeUpdated()
         {
             if (ShapeUpdated != null) ShapeUpdated();
-        }        
+        }
 
-        #endregion
-
-        
+        /// <summary>
+        /// The untransformed axis aligned bounding box of the shape.
+        /// </summary>
+        public TSBBox BoundingBox { get { return boundingBox; } }
 
         /// <summary>
         /// Allows to set a user defined value to the shape.
@@ -358,10 +345,6 @@ namespace TrueSync.Physics3D {
             this.mass = Shape.CalculateMassInertia(this, out geomCen, out inertia);
         }
 
-
-
-        #region ISupportMappable
-
         /// <summary>
         /// SupportMapping. Finds the point in the shape furthest away from the given direction.
         /// Imagine a plane with a normal in the search direction. Now move the plane along the normal
@@ -378,8 +361,7 @@ namespace TrueSync.Physics3D {
         public void SupportCenter(out TSVector geomCenter)
         {
             geomCenter = this.geomCen;
-        }        
+        }
 
-        #endregion
     }
 }
