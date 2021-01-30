@@ -6,7 +6,7 @@ namespace TrueSync {
      *  @brief Simulates physical properties of a body.
      **/
     [AddComponentMenu("TrueSync/Physics/TSMaterial", 22)]
-    public class TSPhysicsMaterial : MonoBehaviour {
+    public class TSMaterial : MonoBehaviour {
 
         /**
          *  @brief Static friction when in contact. 

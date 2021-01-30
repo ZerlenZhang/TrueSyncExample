@@ -11,9 +11,6 @@ namespace TrueSync {
 
         private const float DELTA_TIME_FACTOR = 10f;
 
-        #region Transform Component Logic and APIs
-        
-        
         [SerializeField]
         [HideInInspector]
         [AddTracking]
@@ -24,8 +21,14 @@ namespace TrueSync {
          **/
         public TSVector localPosition
         {
-            get => _localPosition;
-            set => _localPosition = value;
+            get
+            {
+                return _localPosition;
+            }
+            set
+            {
+                _localPosition = value;
+            }
         }
 
         [SerializeField]
@@ -41,8 +44,8 @@ namespace TrueSync {
         **/
         public TSVector position {
             get {
-                if (tsCollider != null && tsCollider.RigidBody != null) {
-                    position = tsCollider.RigidBody.TSPosition - scaledCenter;
+                if (tsCollider != null && tsCollider.Body != null) {
+                    position = tsCollider.Body.TSPosition - scaledCenter;
                 }
 
                 return _position;
@@ -51,8 +54,8 @@ namespace TrueSync {
                 _prevPosition = _position;
                 _position = value;
 
-                if (tsCollider != null && tsCollider.RigidBody != null) {
-                    tsCollider.RigidBody.TSPosition = _position + scaledCenter;
+                if (tsCollider != null && tsCollider.Body != null) {
+                    tsCollider.Body.TSPosition = _position + scaledCenter;
                 }
 
                 UpdateChildPosition();
@@ -69,8 +72,14 @@ namespace TrueSync {
          **/
         public TSQuaternion localRotation
         {
-            get => _localRotation;
-            set => _localRotation = value;
+            get
+            {
+                return _localRotation;
+            }
+            set
+            {
+                _localRotation = value;
+            }
         }
 
         [SerializeField]
@@ -85,8 +94,8 @@ namespace TrueSync {
         **/
         public TSQuaternion rotation {
             get {
-                if (tsCollider != null && tsCollider.RigidBody != null) {
-                    rotation = TSQuaternion.CreateFromMatrix(tsCollider.RigidBody.TSOrientation);
+                if (tsCollider != null && tsCollider.Body != null) {
+                    rotation = TSQuaternion.CreateFromMatrix(tsCollider.Body.TSOrientation);
                 }
 
                 return _rotation;
@@ -94,8 +103,8 @@ namespace TrueSync {
             set {
                 _rotation = value;
 
-                if (tsCollider != null && tsCollider.RigidBody != null) {
-                    tsCollider.RigidBody.TSOrientation = TSMatrix.CreateFromQuaternion(_rotation);
+                if (tsCollider != null && tsCollider.Body != null) {
+                    tsCollider.Body.TSOrientation = TSMatrix.CreateFromQuaternion(_rotation);
                 }
 
                 UpdateChildRotation();
@@ -111,8 +120,12 @@ namespace TrueSync {
         *  @brief Property access to scale. 
         **/
         public TSVector scale {
-            get => _scale;
-            set => _scale = value;
+            get {
+                return _scale;
+            }
+            set {
+                _scale = value;
+            }
         }
 
         [SerializeField]
@@ -125,8 +138,14 @@ namespace TrueSync {
         **/
         public TSVector localScale
         {
-            get => _localScale;
-            set => _localScale = value;
+            get
+            {
+                return _localScale;
+            }
+            set
+            {
+                _localScale = value;
+            }
         }
 
         [SerializeField]
@@ -185,14 +204,20 @@ namespace TrueSync {
         public void Translate(FP x, FP y, FP z, TSTransform relativeTo) {
             Translate(new TSVector(x, y, z), relativeTo);
         }
-        
+
+        /**
+        *  @brief Moves game object based on provided translation vector.
+        **/
+        public void Translate(TSVector translation) {
+            Translate(translation, Space.Self);
+        }
 
         /**
         *  @brief Moves game object based on provided translation vector and a relative space.
         *  
         *  If relative space is SELF then the game object will move based on its forward vector.
         **/
-        public void Translate(TSVector translation, Space relativeTo=Space.Self) {
+        public void Translate(TSVector translation, Space relativeTo) {
             if (relativeTo == Space.Self) {
                 Translate(translation, this);
             } else {
@@ -230,12 +255,33 @@ namespace TrueSync {
         }
 
         /**
+        *  @brief Rotates game object based on provided axis angles of rotation.
+        **/
+        public void Rotate(FP xAngle, FP yAngle, FP zAngle) {
+            Rotate(new TSVector(xAngle, yAngle, zAngle), Space.Self);
+        }
+
+        /**
         *  @brief Rotates game object based on provided axis angles of rotation and a relative space.
         *  
         *  If relative space is SELF then the game object will rotate based on its forward vector.
         **/
-        public void Rotate(FP xAngle, FP yAngle, FP zAngle, Space relativeTo = Space.Self) {
+        public void Rotate(FP xAngle, FP yAngle, FP zAngle, Space relativeTo) {
             Rotate(new TSVector(xAngle, yAngle, zAngle), relativeTo);
+        }
+
+        /**
+        *  @brief Rotates game object based on provided axis angles of rotation.
+        **/
+        public void Rotate(TSVector eulerAngles) {
+            Rotate(eulerAngles, Space.Self);
+        }
+
+        /**
+        *  @brief Rotates game object based on provided axis and angle of rotation.
+        **/
+        public void Rotate(TSVector axis, FP angle) {
+            Rotate(axis, angle, Space.Self);
         }
 
         /**
@@ -243,7 +289,7 @@ namespace TrueSync {
         *  
         *  If relative space is SELF then the game object will rotate based on its forward vector.
         **/
-        public void Rotate(TSVector axis, FP angle, Space relativeTo = Space.Self) {
+        public void Rotate(TSVector axis, FP angle, Space relativeTo) {
             TSQuaternion result = TSQuaternion.identity;
 
             if (relativeTo == Space.Self) {
@@ -261,7 +307,7 @@ namespace TrueSync {
         *  
         *  If relative space is SELF then the game object will rotate based on its forward vector.
         **/
-        public void Rotate(TSVector eulerAngles, Space relativeTo=Space.Self) {
+        public void Rotate(TSVector eulerAngles, Space relativeTo) {
             TSQuaternion result = TSQuaternion.identity;
 
             if (relativeTo == Space.Self) {
@@ -277,22 +323,38 @@ namespace TrueSync {
         /**
         *  @brief Current self forward vector.
         **/
-        public TSVector forward => TSVector.Transform(TSVector.forward, TSMatrix.CreateFromQuaternion(rotation));
+        public TSVector forward {
+            get {
+                return TSVector.Transform(TSVector.forward, TSMatrix.CreateFromQuaternion(rotation));
+            }
+        }
 
         /**
         *  @brief Current self right vector.
         **/
-        public TSVector right => TSVector.Transform(TSVector.right, TSMatrix.CreateFromQuaternion(rotation));
+        public TSVector right {
+            get {
+                return TSVector.Transform(TSVector.right, TSMatrix.CreateFromQuaternion(rotation));
+            }
+        }
 
         /**
         *  @brief Current self up vector.
         **/
-        public TSVector up => TSVector.Transform(TSVector.up, TSMatrix.CreateFromQuaternion(rotation));
+        public TSVector up {
+            get {
+                return TSVector.Transform(TSVector.up, TSMatrix.CreateFromQuaternion(rotation));
+            }
+        }
 
         /**
         *  @brief Returns Euler angles in degrees.
         **/
-        public TSVector eulerAngles => rotation.eulerAngles;
+        public TSVector eulerAngles {
+            get {
+                return rotation.eulerAngles;
+            }
+        }
 
         public TSMatrix4x4 localToWorldMatrix
         {
@@ -310,7 +372,13 @@ namespace TrueSync {
             }
         }
 
-        public TSMatrix4x4 worldToLocalMatrix => TSMatrix4x4.Inverse(localToWorldMatrix);
+        public TSMatrix4x4 worldToLocalMatrix
+        {
+            get
+            {
+                return TSMatrix4x4.Inverse(localToWorldMatrix);
+            }
+        }
 
         /**
          *  @brief Transform a point from local space to world space.
@@ -397,11 +465,6 @@ namespace TrueSync {
         {
             return InverseTransformVector(new TSVector4(vector.x, vector.y, vector.z, FP.Zero)).ToTSVector();
         }
-        
-        
-        
-        #endregion
-        
 
         [HideInInspector]
         public TSCollider tsCollider;
@@ -428,7 +491,7 @@ namespace TrueSync {
         /**
         *  @brief Initializes internal properties based on whether there is a {@link TSCollider} attached.
         **/
-        public void Initialize(TSVector? position=null,TSQuaternion? rotation=null) {
+        public void Initialize() {
             if (initialized) {
                 return;
             }
@@ -443,25 +506,22 @@ namespace TrueSync {
                 if (tsChild != null) {
                     tsChildren.Add(tsChild);
                 }
+
             }
-            
-            if (tsCollider != null) {
-                if (tsCollider.IsInitialized) {
-                    tsCollider.RigidBody.TSPosition = _position + scaledCenter;
-                    tsCollider.RigidBody.TSOrientation = TSMatrix.CreateFromQuaternion(_rotation);
-                }
-            } else {
-                StateTracker.AddTracking(this);
-            }
-            
-            if (position != null)
-                this.position = position.Value;
-            if (rotation != null)
-                this.rotation = rotation.Value;
 
             if (!_serialized) {
                 UpdateEditMode();
             }
+
+            if (tsCollider != null) {
+                if (tsCollider.IsBodyInitialized) {
+                    tsCollider.Body.TSPosition = _position + scaledCenter;
+                    tsCollider.Body.TSOrientation = TSMatrix.CreateFromQuaternion(_rotation);
+                }
+            } else {
+                StateTracker.AddTracking(this);
+            }
+
             initialized = true;
         }
 
@@ -510,7 +570,7 @@ namespace TrueSync {
                     transform.localScale = Vector3.Lerp(transform.localScale, localScale.ToVector(), Time.deltaTime * DELTA_TIME_FACTOR);
                     return;
                 } else if (rb.interpolation == TSRigidBody.InterpolateMode.Extrapolate) {
-                    transform.position = (position + rb.tsCollider.RigidBody.TSLinearVelocity * Time.deltaTime * DELTA_TIME_FACTOR).ToVector();
+                    transform.position = (position + rb.tsCollider.Body.TSLinearVelocity * Time.deltaTime * DELTA_TIME_FACTOR).ToVector();
                     transform.rotation = Quaternion.Lerp(transform.rotation, rotation.ToQuaternion(), Time.deltaTime * DELTA_TIME_FACTOR);
                     transform.localScale = Vector3.Lerp(transform.localScale, localScale.ToVector(), Time.deltaTime * DELTA_TIME_FACTOR);
                     return;

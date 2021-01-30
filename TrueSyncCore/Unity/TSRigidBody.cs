@@ -22,8 +22,8 @@ namespace TrueSync {
          **/
         public FP mass {
             get {
-                if (tsCollider._rigidBody != null) {
-                    return tsCollider._rigidBody.Mass;
+                if (tsCollider._body != null) {
+                    return tsCollider._body.Mass;
                 }
 
                 return _mass;
@@ -32,8 +32,8 @@ namespace TrueSync {
             set {
                 _mass = value;
 
-                if (tsCollider._rigidBody != null) {
-                    tsCollider._rigidBody.Mass = value;
+                if (tsCollider._body != null) {
+                    tsCollider._body.Mass = value;
                 }
             }
         }
@@ -46,8 +46,8 @@ namespace TrueSync {
          **/
         public bool useGravity {
             get {
-                if (tsCollider.IsInitialized) {
-                    return tsCollider.RigidBody.TSAffectedByGravity;
+                if (tsCollider.IsBodyInitialized) {
+                    return tsCollider.Body.TSAffectedByGravity;
                 }
 
                 return _useGravity;
@@ -56,8 +56,8 @@ namespace TrueSync {
             set {
                 _useGravity = value;
 
-                if (tsCollider.IsInitialized) {
-                    tsCollider.RigidBody.TSAffectedByGravity = _useGravity;
+                if (tsCollider.IsBodyInitialized) {
+                    tsCollider.Body.TSAffectedByGravity = _useGravity;
                 }
             }
         }
@@ -70,8 +70,8 @@ namespace TrueSync {
          **/
         public bool isKinematic {
             get {
-                if (tsCollider.IsInitialized) {
-                    return tsCollider.RigidBody.TSIsKinematic;
+                if (tsCollider.IsBodyInitialized) {
+                    return tsCollider.Body.TSIsKinematic;
                 }
 
                 return _isKinematic;
@@ -80,8 +80,8 @@ namespace TrueSync {
             set {
                 _isKinematic = value;
 
-                if (tsCollider.IsInitialized) {
-                    tsCollider.RigidBody.TSIsKinematic = _isKinematic;
+                if (tsCollider.IsBodyInitialized) {
+                    tsCollider.Body.TSIsKinematic = _isKinematic;
                 }
             }
         }
@@ -94,8 +94,8 @@ namespace TrueSync {
          **/
         public FP drag {
             get {
-                if (tsCollider.IsInitialized) {
-                    return tsCollider.RigidBody.TSLinearDrag;
+                if (tsCollider.IsBodyInitialized) {
+                    return tsCollider.Body.TSLinearDrag;
                 }
 
                 return _linearDrag;
@@ -104,8 +104,8 @@ namespace TrueSync {
             set {
                 _linearDrag = value;
 
-                if (tsCollider.IsInitialized) {
-                    tsCollider.RigidBody.TSLinearDrag = _linearDrag;
+                if (tsCollider.IsBodyInitialized) {
+                    tsCollider.Body.TSLinearDrag = _linearDrag;
                 }
             }
         }
@@ -118,8 +118,8 @@ namespace TrueSync {
          **/
         public FP angularDrag {
             get {
-                if (tsCollider.IsInitialized) {
-                    return tsCollider.RigidBody.TSAngularDrag;
+                if (tsCollider.IsBodyInitialized) {
+                    return tsCollider.Body.TSAngularDrag;
                 }
 
                 return _angularDrag;
@@ -128,8 +128,8 @@ namespace TrueSync {
             set {
                 _angularDrag = value;
 
-                if (tsCollider.IsInitialized) {
-                    tsCollider.RigidBody.TSAngularDrag = _angularDrag;
+                if (tsCollider.IsBodyInitialized) {
+                    tsCollider.Body.TSAngularDrag = _angularDrag;
                 }
             }
         }
@@ -148,8 +148,8 @@ namespace TrueSync {
          **/
         public TSRigidBodyConstraints constraints {
             get {
-                if (tsCollider.IsInitialized) {
-                    return tsCollider._rigidBody.FreezeConstraints;
+                if (tsCollider.IsBodyInitialized) {
+                    return tsCollider._body.FreezeConstraints;
                 }
 
                 return _constraints;
@@ -158,8 +158,8 @@ namespace TrueSync {
             set {
                 _constraints = value;
 
-                if (tsCollider.IsInitialized) {
-                    tsCollider._rigidBody.FreezeConstraints = value;
+                if (tsCollider.IsBodyInitialized) {
+                    tsCollider._body.FreezeConstraints = value;
                 }
             }
         }
@@ -211,9 +211,9 @@ namespace TrueSync {
          **/
         public void AddForce(TSVector force, ForceMode mode) {
             if (mode == ForceMode.Force) {
-                tsCollider.RigidBody.TSApplyForce(force);
+                tsCollider.Body.TSApplyForce(force);
             } else if (mode == ForceMode.Impulse) {
-                tsCollider.RigidBody.TSApplyImpulse(force);
+                tsCollider.Body.TSApplyImpulse(force);
             }
         }
 
@@ -235,9 +235,9 @@ namespace TrueSync {
          **/
         public void AddForceAtPosition(TSVector force, TSVector position, ForceMode mode) {
             if (mode == ForceMode.Force) {
-                tsCollider.RigidBody.TSApplyForce(force, position);
+                tsCollider.Body.TSApplyForce(force, position);
             } else if (mode == ForceMode.Impulse) {
-                tsCollider.RigidBody.TSApplyImpulse(force, position);
+                tsCollider.Body.TSApplyImpulse(force, position);
             }
         }
 
@@ -245,8 +245,8 @@ namespace TrueSync {
          *  @brief Returns the velocity of the body at some position in world space. 
          **/
         public TSVector GetPointVelocity(TSVector worldPoint) {
-            TSVector directionPoint = position - tsCollider.RigidBody.TSPosition;
-            return TSVector.Cross(tsCollider.RigidBody.TSAngularVelocity, directionPoint) + tsCollider.RigidBody.TSLinearVelocity;
+            TSVector directionPoint = position - tsCollider.Body.TSPosition;
+            return TSVector.Cross(tsCollider.Body.TSAngularVelocity, directionPoint) + tsCollider.Body.TSLinearVelocity;
         }
 
         /**
@@ -255,7 +255,7 @@ namespace TrueSync {
          *  @param torque A {@link TSVector} representing the torque to be applied.
          **/
         public void AddTorque(TSVector torque) {
-            tsCollider.RigidBody.TSApplyTorque(torque);
+            tsCollider.Body.TSApplyTorque(torque);
         }
 
         /**
@@ -265,7 +265,7 @@ namespace TrueSync {
          **/
         public void AddRelativeTorque(TSVector torque)
         {
-            tsCollider.RigidBody.TSApplyRelativeTorque(torque);
+            tsCollider.Body.TSApplyRelativeTorque(torque);
         }
 
         /**
@@ -322,11 +322,11 @@ namespace TrueSync {
         **/
         public TSVector velocity {
             get {
-                return tsCollider.RigidBody.TSLinearVelocity;
+                return tsCollider.Body.TSLinearVelocity;
             }
 
             set {
-                tsCollider.RigidBody.TSLinearVelocity = value;
+                tsCollider.Body.TSLinearVelocity = value;
             }
         }
 
@@ -335,11 +335,11 @@ namespace TrueSync {
         **/
         public TSVector angularVelocity {
             get {
-                return tsCollider.RigidBody.TSAngularVelocity;
+                return tsCollider.Body.TSAngularVelocity;
             }
 
             set {
-                tsCollider.RigidBody.TSAngularVelocity = value;
+                tsCollider.Body.TSAngularVelocity = value;
             }
         }
 

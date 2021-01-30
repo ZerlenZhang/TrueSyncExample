@@ -24,8 +24,8 @@ namespace TrueSync {
                 vertices = GetVertices();
                 indices = GetIndices();
 
-                if (_rigidBody != null) {
-                    _rigidBody.Shape = CreateShape();
+                if (_body != null) {
+                    _body.Shape = CreateShape();
                 }
             }
         }

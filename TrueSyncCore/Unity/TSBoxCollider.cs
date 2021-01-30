@@ -18,8 +18,8 @@ namespace TrueSync {
          **/
         public TSVector size {
             get {
-                if (_rigidBody != null) {
-                    TSVector boxSize = ((BoxShape)_rigidBody.Shape).Size;
+                if (_body != null) {
+                    TSVector boxSize = ((BoxShape)_body.Shape).Size;
                     boxSize.x /= lossyScale.x;
                     boxSize.y /= lossyScale.y;
                     boxSize.z /= lossyScale.z;
@@ -33,8 +33,8 @@ namespace TrueSync {
             set {
                 _size = value.ToVector();
 
-                if (_rigidBody != null) {
-                    ((BoxShape)_rigidBody.Shape).Size = TSVector.Scale(value, lossyScale);
+                if (_body != null) {
+                    ((BoxShape)_body.Shape).Size = TSVector.Scale(value, lossyScale);
                 }
             }
         }

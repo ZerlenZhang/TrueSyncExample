@@ -84,13 +84,11 @@ namespace TrueSync
 
         public TSVector eulerAngles {
             get {
-                var result = new TSVector
-                {
-                    x = TSMath.Atan2(M32, M33) * FP.Rad2Deg,
-                    y = TSMath.Atan2(-M31, TSMath.Sqrt(M32 * M32 + M33 * M33)) * FP.Rad2Deg,
-                    z = TSMath.Atan2(M21, M11) * FP.Rad2Deg
-                };
+                TSVector result = new TSVector();
 
+                result.x = TSMath.Atan2(M32, M33) * FP.Rad2Deg;
+                result.y = TSMath.Atan2(-M31, TSMath.Sqrt(M32 * M32 + M33 * M33)) * FP.Rad2Deg;
+                result.z = TSMath.Atan2(M21, M11) * FP.Rad2Deg;
 
                 return result * -1;
             }
@@ -472,10 +470,8 @@ namespace TrueSync
         }
 
         public static void LookAt(TSVector forward, TSVector upwards, out TSMatrix result) {
-            TSVector zaxis = forward;
-            zaxis.Normalize();
-            TSVector xaxis = TSVector.Cross(upwards, zaxis); 
-            xaxis.Normalize();
+            TSVector zaxis = forward; zaxis.Normalize();
+            TSVector xaxis = TSVector.Cross(upwards, zaxis); xaxis.Normalize();
             TSVector yaxis = TSVector.Cross(zaxis, xaxis);
 
             result.M11 = xaxis.x;

@@ -1,6 +1,4 @@
-﻿using TrueSync.Physics3D;
-
-namespace TrueSync {
+﻿namespace TrueSync {
 
     /**
     * @brief Represents an interface to 3D bodies.

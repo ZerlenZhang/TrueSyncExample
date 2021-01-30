@@ -407,8 +407,6 @@ namespace TrueSync.Physics3D {
         /// </summary>
         public void SetMassProperties()
         {
-            TSLinearDrag = TrueSyncManager.Config.linearDrag;
-            TSAngularDrag = TrueSyncManager.Config.angularDrag;
             this.inertia = Shape.inertia;
             TSMatrix.Inverse(ref inertia, out invInertia);
             this.inverseMass = FP.One / Shape.mass;
@@ -819,8 +817,7 @@ namespace TrueSync.Physics3D {
             }
         }
 
-        public FP TSLinearDrag
-        {
+        public FP TSLinearDrag {
             get {
                 return linearDrag;
             }
